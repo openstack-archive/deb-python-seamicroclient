@@ -10,6 +10,7 @@ if sys.version_info < (2, 7, 0):
 
 from seamicro_api import __version__
 
+
 setup(name='seamicro_api',
       version=__version__,
       description='Python bindings for SeaMicro API v0.9',
