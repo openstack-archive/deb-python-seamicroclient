@@ -11,6 +11,7 @@ CHASSIS_HOSTNAME = "192.168.142.10"
 CHASSIS_USERNAME = "admin"
 CHASSIS_PASSWORD = "seamicro"
 
+
 class SeaMicroAPITestCase(unittest.TestCase):
 	def setUp(self):
 		self.api = SeaMicroAPI(hostname=CHASSIS_HOSTNAME, use_ssl=True, verify_ssl=False)
