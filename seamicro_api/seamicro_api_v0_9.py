@@ -11,13 +11,13 @@ class SeaMicroAPIError(Exception):
     def __str__(self):
         return repr(self.value)
 
-LOGGER = logging.getLogger('SeaMicroAPI')
+LOGGER = logging.getLogger(__name__)
 LOGGER.addHandler(logging.StreamHandler())
 LOGGER.setLevel(logging.INFO)
 
 SERVER_POWER_STATES = Enum('on', 'off', 'reset')
 
-class SeaMicroAPI:
+class SeaMicroAPI_v0_9:
     RESPONSE_CODES = {
         200: 'OK',
         202: 'Accepted',

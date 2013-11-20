@@ -3,7 +3,8 @@ import sys
 import pprint
 import time
 import requests
-from seamicro_api import SeaMicroAPI, SeaMicroAPIError
+from seamicro_api import SeaMicroAPI_v0_9 as SeaMicroAPI
+from seamicro_api import SeaMicroAPIError
 
 SERVER_TO_POWER_TEST = "3/0"
 CHASSIS_HOSTNAME = "192.168.142.10"
@@ -31,7 +32,7 @@ class TestCardsAll(SeaMicroAPITestCase):
 		self.do_good_login()
 		cards_all = self.api.cards_all()
 
-		pprint.pprint(cards_all, stream=sys.stderr)
+		#pprint.pprint(cards_all, stream=sys.stderr)
 
 
 class TestServersAll(SeaMicroAPITestCase):
@@ -42,7 +43,7 @@ class TestServersAll(SeaMicroAPITestCase):
 		def func(x,y):
 			return int(x['serverId'].split('/')[0]) - int(y['serverId'].split('/')[0])
 
-		pprint.pprint([(s['serverId'], s['serverMacAddr']) for s in sorted(servers.values(), cmp=func)  if s['serverNIC'] == '0'], stream=sys.stderr)
+		#pprint.pprint([(s['serverId'], s['serverMacAddr']) for s in sorted(servers.values(), cmp=func)  if s['serverNIC'] == '0'], stream=sys.stderr)
 
 
 class TestSeaMicroAPIAuthentication(SeaMicroAPITestCase):
