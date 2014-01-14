@@ -1,0 +1,156 @@
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
+"""
+Server interface.
+"""
+
+
+from seamicroclient import base
+
+
+class Server(base.Resource):
+    HUMAN_ID = True
+
+    def __repr__(self):
+        return "<Server: %s>" % self.id
+
+    def power_on(self, using_pxe=False):
+        self.manager.power_on(self, using_pxe)
+
+    def power_off(self, force=False):
+        self.manager.power_off(self, force)
+
+    def reset(self, using_pxe=False):
+        self.manager.reset(self, using_pxe)
+
+
+class ServerManager(base.ManagerWithFind):
+    resource_class = Server
+
+    def get(self, server):
+        """
+        Get a server.
+
+        :param server: ID of the :class:`Server` to get.
+        :rtype: :class:`Server`
+        """
+        return self._get(base.getid(server),
+                         "/servers/%s" % base.getid(server))
+
+    def list(self):
+        """
+        Get a list of servers.
+
+        :rtype: list of :class:`Server`
+        """
+        return self._list("/servers")
+
+    def power_on(self, server, using_pxe=False, **kwargs):
+        """
+        Power on a server.
+
+        :param server: The :class:`Server` (or its ID) to power on.
+        :param using_pxe: power on server and use pxe boot.
+        """
+        action_params = {}
+        if using_pxe:
+            action_params = {"using-pxe": str(using_pxe)}
+        self._action('power-on', server, action_params)
+
+    def power_off(self, server, force=False, **kwargs):
+        """
+        Power off a server.
+
+        :param server: The :class:`Server` (or its ID) to power off.
+        :param force: force the server to power off.
+        """
+        action_params = {}
+        if force:
+            action_params = {"force": str(force)}
+        self._action('power-off', server, action_params)
+
+    def reset(self, server, using_pxe=False, **kwargs):
+        """
+        Reset power of a server.
+
+        :param server: The :class:`Server` (or its ID) to power on.
+        :param using_pxe: reset and power on server and use pxe boot.
+        """
+        action_params = {}
+        if using_pxe:
+            action_params = {"using-pxe": str(using_pxe)}
+        self._action('reset', server, action_params)
+
+    def set_tagged_vlan(self, server, vlan_id, **kwargs):
+        """
+        Set the tagged vlan id for the server.
+
+        :param server: The :class:`Server` (or its ID) to power on.
+        :param vlan_id: The tagged vlan id for the server.
+        """
+        self._handle_vlan(server, vlan_id, "tagged-vlan", **kwargs)
+
+    def unset_tagged_vlan(self, server, vlan_id, **kwargs):
+        """
+        Unset the tagged vlan id for the server.
+
+        :param server: The :class:`Server` (or its ID) to power on.
+        :param vlan_id: The tagged vlan id for the server.
+        """
+        self._handle_vlan(server, vlan_id, "tagged-vlan", unset=True, **kwargs)
+
+    def set_untagged_vlan(self, server, vlan_id, **kwargs):
+        """
+        Set the untagged vlan id for the server.
+
+        :param server: The :class:`Server` (or its ID) to power on.
+        :param vlan_id: The untagged vlan id for the server.
+        """
+        self._handle_vlan(server, vlan_id, "untagged-vlan", **kwargs)
+
+    def unset_untagged_vlan(self, server, vlan_id, **kwargs):
+        """
+        Unset the untagged vlan id for the server.
+
+        :param server: The :class:`Server` (or its ID) to power on.
+        :param vlan_id: The untagged vlan id for the server.
+        """
+        self._handle_vlan(server, vlan_id, "untagged-vlan",
+                          unset=True, **kwargs)
+
+    def _handle_vlan(self, server, vlan_id, vlan_type, unset=False, **kwargs):
+        """
+        Set/Unset tagged/untagged vlan id for the server.
+
+        :param server: The :class:`Server` (or its ID) to power on.
+        :param vlan_id: The tagged vlan id for the server.
+        :param vlan_type: tagged-vlan or untagged-vlan type.
+        :param unset: Boolean flag to unset the vlan_id for the server.
+        """
+        if vlan_id is not None:
+
+            action_params = {}
+            if unset:
+                action_params.update({'allow': 'False'})
+            action_params = {vlan_type: str(vlan_id)}
+            self._action('set-%s' % vlan_type, server, action_params)
+
+    def _action(self, action, server, info=None, **kwargs):
+        """
+        Perform a server "action" -- power-on/power-off/reset/etc.
+        """
+        body = {"action": action}
+        body.update(info)
+        self.run_hooks('modify_body_for_action', body, **kwargs)
+        url = '/servers/%s' % base.getid(server)
+        return self.api.client.put(url, body=body)

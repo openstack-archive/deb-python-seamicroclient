@@ -1,36 +1,18 @@
-*.py[cod]
-.venv
-
-# C extensions
-*.so
-
-# Packages
-*.egg
-*.egg-info
-dist
-build
-eggs
-parts
-bin
-var
-sdist
-develop-eggs
-.installed.cfg
-lib
-lib64
-
-# Installer logs
-pip-log.txt
-
-# Unit test / coverage reports
 .coverage
+.venv
+.testrepository
+subunit.log
 .tox
-nosetests.xml
-
-# Translations
-*.mo
-
-# Mr Developer
-.mr.developer.cfg
-.project
-.pydevproject
+*,cover
+cover
+*.pyc
+.idea
+*.sw?
+*~
+build
+dist
+AUTHORS
+ChangeLog
+seamicroclient/versioninfo
+*.egg
+*egg-info

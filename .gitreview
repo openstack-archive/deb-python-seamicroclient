@@ -1,0 +1,4 @@
+[gerrit]
+host=amd_dmz_gerrit_ip
+port=29418
+project=openstack/python-seamicroclient.git
