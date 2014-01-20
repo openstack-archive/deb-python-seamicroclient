@@ -59,3 +59,15 @@ class ServersTest(utils.TestCase):
     def test_server_unset_untagged_vlan(self):
         cs.servers.unset_untagged_vlan(1, '12-12')
         cs.assert_called('PUT', '/servers/1')
+
+    def test_server_attach_volume_default(self):
+        cs.servers.attach_volume(1, '1/p6-6/vol1')
+        cs.assert_called('PUT', '/servers/1/vdisk/0')
+
+    def test_server_attach_volume_with_vdisk(self):
+        cs.servers.attach_volume(1, '1/p6-6/vol1', vdisk=3)
+        cs.assert_called('PUT', '/servers/1/vdisk/3')
+
+    def test_set_boot_order(self):
+        cs.servers.set_boot_order(1, 'pxe')
+        cs.assert_called('PUT', '/servers/1')

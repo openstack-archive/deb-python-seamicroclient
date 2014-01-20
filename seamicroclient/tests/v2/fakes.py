@@ -96,3 +96,9 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def get_storage_volumes_0_p0_0_1(self, **kwargs):
         return (200, {}, {'0/p0-0/1': {}})
+
+    def put_servers_1_vdisk_0(self, **kwargs):
+        return (200, {}, {})
+
+    def put_servers_1_vdisk_3(self, **kwargs):
+        return (200, {}, {})

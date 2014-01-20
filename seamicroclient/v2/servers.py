@@ -33,6 +33,25 @@ class Server(base.Resource):
     def reset(self, using_pxe=False):
         self.manager.reset(self, using_pxe)
 
+    def set_tagged_vlan(self, vlan_id, **kwargs):
+        self.manager.set_tagged_vlan(self, vlan_id, **kwargs)
+
+    def unset_tagged_vlan(self, vlan_id, **kwargs):
+        self.manager.unset_tagged_vlan(self, vlan_id, **kwargs)
+
+    def set_untagged_vlan(self, vlan_id, **kwargs):
+        self.manager.set_untagged_vlan(self, vlan_id, **kwargs)
+
+    def unset_untagged_vlan(self, vlan_id, **kwargs):
+        self.manager.unset_untagged_vlan(self, vlan_id, **kwargs)
+
+    def attach_volume(self, volume, vdisk=0, **kwargs):
+        self.manager.attach_volume(self, volume, vdisk, **kwargs)
+
+    def set_boot_order(self, boot_order="hd0", **kwargs):
+        self.manager.set_boot_order(self, boot_order, **kwargs)
+
+
 
 class ServerManager(base.ManagerWithFind):
     resource_class = Server
@@ -54,6 +73,21 @@ class ServerManager(base.ManagerWithFind):
         :rtype: list of :class:`Server`
         """
         return self._list("/servers")
+
+    def attach_volume(self, server, volume, vdisk=0, **kwargs):
+        """
+        Attach volume to vdisk # to given server
+
+        :param server: The :class:`Server` (or its ID) to power on.
+        :param volume: The :class:`Volume` (or its ID) that is to be attached.
+        :param vdisk: The vdisk number of the server to attach volume to.
+        :
+        """
+        body = {"value": volume}
+        self.run_hooks('modify_body_for_action', body, **kwargs)
+        url = '/servers/%s/vdisk/%s' % (base.getid(server), vdisk)
+        return self.api.client.put(url, body=body)
+
 
     def power_on(self, server, using_pxe=False, **kwargs):
         """
@@ -144,6 +178,19 @@ class ServerManager(base.ManagerWithFind):
                 action_params.update({'allow': 'False'})
             action_params = {vlan_type: str(vlan_id)}
             self._action('set-%s' % vlan_type, server, action_params)
+
+    def set_boot_order(self, server, boot_order="hd0", **kwargs):
+        """
+        Set bios boot order for the server
+
+        :param server: The :class:`Server` (or its ID)
+        :param boot_order: The boot order for the server
+        """
+        action_params = {'boot-order': boot_order}
+        if boot_order == "pxe":
+            action_params.update({'boot-order': 'pxe,hd0'})
+
+        return self._action('set-bios-boot-order', server, action_params)
 
     def _action(self, action, server, info=None, **kwargs):
         """
