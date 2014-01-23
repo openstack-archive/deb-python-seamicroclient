@@ -52,7 +52,6 @@ class Server(base.Resource):
         self.manager.set_boot_order(self, boot_order, **kwargs)
 
 
-
 class ServerManager(base.ManagerWithFind):
     resource_class = Server
 
@@ -87,7 +86,6 @@ class ServerManager(base.ManagerWithFind):
         self.run_hooks('modify_body_for_action', body, **kwargs)
         url = '/servers/%s/vdisk/%s' % (base.getid(server), vdisk)
         return self.api.client.put(url, body=body)
-
 
     def power_on(self, server, using_pxe=False, **kwargs):
         """

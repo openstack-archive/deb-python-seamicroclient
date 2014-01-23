@@ -38,13 +38,32 @@ class PoolManager(base.ManagerWithFind):
         return self._get(base.getid(pool),
                          "/storage/pools/%s" % base.getid(pool))
 
-    def list(self):
+    def list(self, filters=None):
         """
         Get a list of pools.
 
         :rtype: list of :class:`Pool`
         """
-        return self._list("/storage/pools")
+        pools = self._list("/storage/pools")
+        output = set()
+        if filters is not None:
+            for k, v in filters.iteritems():
+                for pool in pools:
+                    if isinstance(v, basestring):
+                        if v in pool[k]:
+                            output.add(pool)
+                        else:
+                            if pool in output:
+                                output.remove(pool)
+                    elif isinstance(v, int):
+                        if v == pool[k]:
+                            output.add(pool)
+                        else:
+                            if pool in output:
+                                output.remove(pool)
+                    else:
+                        continue
+        return output
 
     def _action(self, action, pool, info=None, **kwargs):
         """

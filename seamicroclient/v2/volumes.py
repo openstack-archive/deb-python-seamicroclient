@@ -14,7 +14,7 @@
 Volume interface.
 """
 
-
+from seamicroclient.openstack.common import uuidutils
 from seamicroclient import base
 
 
@@ -49,7 +49,7 @@ class VolumeManager(base.ManagerWithFind):
         """
         return self._list("/storage/volumes")
 
-    def create(self, volume_id, pool, size, **kwargs):
+    def create(self, size, pool, volume_id=None, **kwargs):
         """
         Create a volume of the given size in the given pool.
 
@@ -59,6 +59,8 @@ class VolumeManager(base.ManagerWithFind):
         :param size: Size of the new volume in GB.
         """
         create_params = {}
+        if volume_id is None:
+            volume_id = uuidutils.generate_uuid()
         if pool and volume_id and size:
             create_params = {'volume-size': str(size)}
             resource_url = "%s/%s" % (base.getid(pool), volume_id)
