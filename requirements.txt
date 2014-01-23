@@ -1,9 +1,3 @@
-# python-seamicroclient v0.9 requirements
-enum==0.4.4
-wsgiref==0.1.2
-
-
-# python-seamicroclient v2.0 requirements
 pbr>=0.5.21,<1.0
 argparse
 iso8601>=0.1.8

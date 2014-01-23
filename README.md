@@ -1,2 +1,2 @@
-Python bindings for SeaMicro API v0.9.
+Python client for consuming SeaMicro REST API v2.0
 
