@@ -39,7 +39,7 @@ class HTTPClient(object):
         self.user = user
         self.password = password
         self.api_endpoint = auth_url
-        self.auth_url = auth_url.rstrip('/') + '/login'
+        self.auth_url = auth_url.rstrip('/')
         self.version = 'v2.0'
         self.http_log_debug = http_log_debug
         if timeout is not None:
