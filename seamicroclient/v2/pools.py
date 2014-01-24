@@ -50,20 +50,21 @@ class PoolManager(base.ManagerWithFind):
             for k, v in filters.iteritems():
                 for pool in pools:
                     if isinstance(v, basestring):
-                        if v in pool[k]:
+                        if v in getattr(pool, k):
                             output.add(pool)
                         else:
                             if pool in output:
                                 output.remove(pool)
                     elif isinstance(v, int):
-                        if v == pool[k]:
+                        if v == getattr(pool, k):
                             output.add(pool)
                         else:
                             if pool in output:
                                 output.remove(pool)
                     else:
                         continue
-        return output
+            return output
+        return pools
 
     def _action(self, action, pool, info=None, **kwargs):
         """

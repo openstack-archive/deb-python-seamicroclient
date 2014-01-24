@@ -14,7 +14,9 @@
 Volume interface.
 """
 
-from seamicroclient.openstack.common import uuidutils
+import binascii
+import os
+
 from seamicroclient import base
 
 
@@ -60,7 +62,7 @@ class VolumeManager(base.ManagerWithFind):
         """
         create_params = {}
         if volume_id is None:
-            volume_id = uuidutils.generate_uuid()
+            volume_id = str(binascii.b2a_hex(os.urandom(6)))
         if pool and volume_id and size:
             create_params = {'volume-size': str(size)}
             resource_url = "%s/%s" % (base.getid(pool), volume_id)
