@@ -72,7 +72,7 @@ class Manager(utils.HookableMixin):
         self.run_hooks('modify_body_for_create', body, **kwargs)
         _resp, body = self.api.client.post(url, body=body)
         if isinstance(body, basestring):
-            return self.get(body.partition('/')[-1])
+            return body.partition('/')[-1]
         if return_raw:
             return body
         for k, v in body.iteritems():
@@ -87,7 +87,7 @@ class Manager(utils.HookableMixin):
         _resp, body = self.api.client.put(url, body=body)
         if body:
             if isinstance(body, basestring):
-                return self.get(body.partition('/')[-1])
+                return body.partition('/')[-1]
 
             if body == kwargs.get('action'):
                 return

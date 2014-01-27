@@ -33,6 +33,6 @@ class VolumesTest(utils.TestCase):
         self.assertTrue(isinstance(p, volumes.Volume))
 
     def test_create_volume(self):
-        v = cs.volumes.create('1', '0/p0_0', 2)
+        v = cs.volumes.create(2, '0/p0_0', '1')
         cs.assert_called('PUT', '/storage/volumes/0/p0_0/1')
         self.assertTrue(isinstance(v, volumes.Volume))

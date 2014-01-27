@@ -43,6 +43,11 @@ class ServersTest(utils.TestCase):
             if s.active == active:
                 return
 
+    @staticmethod
+    def create_volume(size=1):
+        pool = cs.pools.list()[0]
+        return cs.volumes.create(size, pool)
+
     def test_list_servers(self):
         sl = cs.servers.list()
         self.assertTrue(len(sl) > 0)
@@ -74,3 +79,24 @@ class ServersTest(utils.TestCase):
         self.wait_for_server_status(s, active=True)
         s = cs.servers.get(SERVER_ID)
         self.assertEqual(s.active, True)
+
+# skipping because vdisk info is not updated due to api bug in GET
+# /servers/<server_id>
+#    def test_attach_detach_volume(self):
+#        volume_id = self.create_volume()
+#        server = cs.servers.list()[0]
+#        server.detach_volume()
+#        server.attach_volume(volume_id)
+#        server = cs.servers.get(server.id)
+#        self.assertEqual(server.vdisk['0'], volume_id)
+#        server.detach_volume()
+#        cs.volumes.delete(volume_id)
+
+    def test_set_unset_tagged_vlan(self):
+        server = cs.servers.list()[0]
+        server.set_tagged_vlan(VLAN_ID)
+        server = cs.servers.get(server.id)
+        self.assertIn(VLAN_ID, server.nic['0']['taggedVlans'])
+        server.unset_tagged_vlan(VLAN_ID)
+        server = cs.servers.get(server.id)
+        self.assertNotIn(VLAN_ID, server.nic['0']['taggedVlans'])

@@ -79,6 +79,12 @@ class FakeHTTPClient(base_client.HTTPClient):
     def put_servers_1(self, **kwargs):
         return (200, {}, {})
 
+    def put_servers_1_nic_0_untaggedVlans(self, **kwargs):
+        return (200, {}, {})
+
+    def put_servers_1_nic_0_taggedVlans(self, **kwargs):
+        return (200, {}, {})
+
     def get_storage_pools(self):
         return (200, {}, {'0/p0-0': {}, '0/p1-1': {}})
 
@@ -101,4 +107,7 @@ class FakeHTTPClient(base_client.HTTPClient):
         return (200, {}, {})
 
     def put_servers_1_vdisk_3(self, **kwargs):
+        return (200, {}, {})
+
+    def delete_servers_1_vdisk_0(self, **kwargs):
         return (200, {}, {})
