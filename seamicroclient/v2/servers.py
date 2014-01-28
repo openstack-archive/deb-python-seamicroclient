@@ -13,11 +13,13 @@
 """
 Server interface.
 """
-
-TAGGED_VLAN= "taggedVlans"
-UNTAGGED_VLAN = "untaggedVlans"
+import time
 
 from seamicroclient import base
+
+
+TAGGED_VLAN = "taggedVlans"
+UNTAGGED_VLAN = "untaggedVlans"
 
 
 class Server(base.Resource):
@@ -25,6 +27,11 @@ class Server(base.Resource):
 
     def __repr__(self):
         return "<Server: %s>" % self.id
+
+    def refresh(self, sleep=None):
+        if sleep:
+            time.sleep(sleep)
+        return self.manager.get(self.id)
 
     def power_on(self, using_pxe=False):
         self.manager.power_on(self, using_pxe)

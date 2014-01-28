@@ -21,7 +21,9 @@ STATUS_WAIT_TIMEOUT = 30
 BUILD_INTERVAL = 10
 
 SERVER_ID = '0/0'
-VLAN_ID = '7'
+UNTAGGED_VLAN_ID = '7'
+TAGGED_VLAN_ID = '17'
+
 cs = Client("admin", "seamicro", "http://chassis/v2.0")
 
 
@@ -39,7 +41,7 @@ class ServersTest(utils.TestCase):
             if timed_out:
                 raise FunctionalException()
             time.sleep(BUILD_INTERVAL)
-            s = cs.servers.get(s.id)
+            s = s.refresh()
             if s.active == active:
                 return
 
@@ -62,13 +64,13 @@ class ServersTest(utils.TestCase):
         if s.active:
             s.power_off()
             self.wait_for_server_status(s, active=False)
-            s = cs.servers.get(s.id)
+            s = s.refresh()
             self.assertEqual(s.active, False)
             s.power_on()
         else:
             s.power_on()
             self.wait_for_server_status(s, active=True)
-            s = cs.servers.get(s.id)
+            s = s.refresh()
             self.assertEqual(s.active, True)
             s.power_off()
 
@@ -77,7 +79,7 @@ class ServersTest(utils.TestCase):
         self.assertEqual(s.id, SERVER_ID)
         s.reset()
         self.wait_for_server_status(s, active=True)
-        s = cs.servers.get(SERVER_ID)
+        s = s.refresh()
         self.assertEqual(s.active, True)
 
 # skipping because vdisk info is not updated due to api bug in GET
@@ -87,16 +89,46 @@ class ServersTest(utils.TestCase):
 #        server = cs.servers.list()[0]
 #        server.detach_volume()
 #        server.attach_volume(volume_id)
-#        server = cs.servers.get(server.id)
+#        server = server.refresh()
 #        self.assertEqual(server.vdisk['0'], volume_id)
 #        server.detach_volume()
 #        cs.volumes.delete(volume_id)
 
-    def test_set_unset_tagged_vlan(self):
+    def test_set_tagged_vlan(self):
         server = cs.servers.list()[0]
-        server.set_tagged_vlan(VLAN_ID)
-        server = cs.servers.get(server.id)
-        self.assertIn(VLAN_ID, server.nic['0']['taggedVlans'])
-        server.unset_tagged_vlan(VLAN_ID)
-        server = cs.servers.get(server.id)
-        self.assertNotIn(VLAN_ID, server.nic['0']['taggedVlans'])
+        server.unset_tagged_vlan(TAGGED_VLAN_ID)
+        server = server.refresh(10)
+        server.set_tagged_vlan(TAGGED_VLAN_ID)
+        server = server.refresh(10)
+        self.assertTrue(TAGGED_VLAN_ID in server.nic['0']['taggedVlan'])
+        server.unset_tagged_vlan(TAGGED_VLAN_ID)
+
+    def test_unset_tagged_vlan(self):
+        server = cs.servers.list()[0]
+        server.unset_tagged_vlan(TAGGED_VLAN_ID)
+        server = server.refresh(10)
+        server.set_tagged_vlan(TAGGED_VLAN_ID)
+        server = server.refresh(10)
+        server.unset_tagged_vlan(TAGGED_VLAN_ID)
+        server = server.refresh(10)
+        self.assertTrue(TAGGED_VLAN_ID not in server.nic['0']['taggedVlan'])
+
+    def test_unset_untagged_vlan(self):
+        server = cs.servers.list()[0]
+        server.unset_untagged_vlan(UNTAGGED_VLAN_ID)
+        server = server.refresh(10)
+        server.set_untagged_vlan(UNTAGGED_VLAN_ID)
+        server = server.refresh(10)
+        server.unset_untagged_vlan(UNTAGGED_VLAN_ID)
+        server = server.refresh(10)
+        self.assertTrue(UNTAGGED_VLAN_ID not in
+                        server.nic['0']['untaggedVlan'])
+
+    def test_set_untagged_vlan(self):
+        server = cs.servers.list()[0]
+        server.unset_untagged_vlan(UNTAGGED_VLAN_ID)
+        server = server.refresh(10)
+        server.set_untagged_vlan(UNTAGGED_VLAN_ID)
+        server = server.refresh(10)
+        self.assertTrue(UNTAGGED_VLAN_ID in server.nic['0']['untaggedVlan'])
+        server.unset_untagged_vlan(UNTAGGED_VLAN_ID)
