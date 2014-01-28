@@ -119,7 +119,7 @@ class ServerManager(base.ManagerWithFind):
         """
         action_params = {}
         if using_pxe:
-            action_params = {"using-pxe": str(using_pxe)}
+            action_params = {"using-pxe": using_pxe}
         self._action('power-on', server, action_params)
 
     def power_off(self, server, force=False, **kwargs):
@@ -131,7 +131,7 @@ class ServerManager(base.ManagerWithFind):
         """
         action_params = {}
         if force:
-            action_params = {"force": str(force)}
+            action_params = {"force": force}
         self._action('power-off', server, action_params)
 
     def reset(self, server, using_pxe=False, **kwargs):
@@ -143,7 +143,7 @@ class ServerManager(base.ManagerWithFind):
         """
         action_params = {}
         if using_pxe:
-            action_params = {"using-pxe": str(using_pxe)}
+            action_params = {"using-pxe": using_pxe}
         self._action('reset', server, action_params)
 
     def set_tagged_vlan(self, server, vlan_id, **kwargs):
