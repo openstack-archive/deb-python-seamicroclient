@@ -12,7 +12,7 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-#import pbr.version
+import pbr.version
 
 
-#__version__ = pbr.version.VersionInfo('python-seamicroclient').version_string()
+__version__ = pbr.version.VersionInfo('python-seamicroclient').version_string()
