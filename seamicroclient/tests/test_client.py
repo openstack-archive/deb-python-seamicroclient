@@ -27,7 +27,7 @@ class ClientTest(utils.TestCase):
         instance = seamicroclient.client.HTTPClient(user='user',
                                                     password='password',
                                                     timeout=2,
-                                                    auth_url="http://www.blah.com/login")
+                                                    auth_url="http://test")
         self.assertEqual(instance.timeout, 2)
 
     def test_get_client_class_v2(self):

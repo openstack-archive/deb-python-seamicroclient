@@ -82,17 +82,15 @@ class ServersTest(utils.TestCase):
         s = s.refresh()
         self.assertEqual(s.active, True)
 
-# skipping because vdisk info is not updated due to api bug in GET
-# /servers/<server_id>
-#    def test_attach_detach_volume(self):
-#        volume_id = self.create_volume()
-#        server = cs.servers.list()[0]
-#        server.detach_volume()
-#        server.attach_volume(volume_id)
-#        server = server.refresh()
-#        self.assertEqual(server.vdisk['0'], volume_id)
-#        server.detach_volume()
-#        cs.volumes.delete(volume_id)
+    def test_attach_detach_volume(self):
+        volume_id = self.create_volume()
+        server = cs.servers.list()[0]
+        server.detach_volume()
+        server.attach_volume(volume_id)
+        server = server.refresh()
+        self.assertEqual(server.vdisk['0'], volume_id)
+        server.detach_volume()
+        cs.volumes.delete(volume_id)
 
     def test_set_tagged_vlan(self):
         server = cs.servers.list()[0]

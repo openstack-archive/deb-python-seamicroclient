@@ -152,7 +152,8 @@ class HTTPClient(object):
     def _cs_request(self, url, method, **kwargs):
         if self.auth_token:
             if method in ['GET', 'DELETE']:
-                url = "%s?%s=%s" % (url, "authtoken", self.auth_token)
+                url = "%s?username=%s&password=%s" % (url, self.user,
+                                                      self.password)
             else:
                 kwargs.setdefault('body', {})['authtoken'] = self.auth_token
 
@@ -171,7 +172,8 @@ class HTTPClient(object):
                 self.unauthenticate()
                 self.authenticate()
                 if method in ['GET', 'DELETE']:
-                    url = "%s?%s=%s" % (url, "authtoken", self.auth_token)
+                    url = "%s?username=%s&password=%s" % (url, self.user,
+                                                          self.password)
                 else:
                     kwargs.setdefault(
                         'body', {})['authtoken'] = self.auth_token

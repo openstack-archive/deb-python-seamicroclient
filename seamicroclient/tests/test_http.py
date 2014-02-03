@@ -42,14 +42,16 @@ bad_req_mock_request = mock.Mock(return_value=(bad_req_response))
 
 
 def get_client():
-    cl = client.HTTPClient("username", "password", "http://example.com/login")
+    cl = client.HTTPClient("username", "password", "http://example.com")
     return cl
 
 
 def get_authed_client():
     cl = get_client()
-    cl.auth_url = "http://example.com/login"
+    cl.auth_url = "http://example.com"
     cl.auth_token = "token"
+    cl.user = "user"
+    cl.password = "password"
     return cl
 
 
@@ -66,7 +68,7 @@ class ClientTest(utils.TestCase):
                        'User-Agent': 'python-seamicroclient'}
             mock_request.assert_called_with(
                 "GET",
-                "http://example.com/hi?authtoken=%s" % cl.auth_token,
+                "http://example.com/hi?username=%s&password=%s" % (cl.user, cl.password),
                 headers=headers)
             # Automatic JSON parsing
             self.assertEqual(body, {"hi": "there"})
@@ -121,11 +123,11 @@ class ClientTest(utils.TestCase):
 
     def test_client_logger(self):
         cl1 = client.HTTPClient("username", "password",
-                                "http://example.com/login",
+                                "http://example.com",
                                 http_log_debug=True)
         self.assertEqual(len(cl1._logger.handlers), 1)
 
         cl2 = client.HTTPClient("username", "password",
-                                "http://example.com/login",
+                                "http://example.com",
                                 http_log_debug=True)
         self.assertEqual(len(cl2._logger.handlers), 1)

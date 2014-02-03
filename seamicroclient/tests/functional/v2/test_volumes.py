@@ -11,7 +11,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
 from seamicroclient.tests import utils
 from seamicroclient.v2 import Client
 
@@ -38,11 +37,12 @@ class VolumesTest(utils.TestCase):
         pool = cs.pools.list()[0]
         volume_size = 2
         volume_id = self.create_volume(volume_size, pool)
-        self.assertIn(pool, volume_id)
+        self.assertIn(pool.id, volume_id)
         cs.volumes.delete(volume_id)
 
-#    skip because api doesnt GET unattached volume
-#    def test_delete_volume(self):
-#        volume = self.create_volume()
-#        self.assertRaises(exceptions.NotFound, cs.volumes.get,
-#                          volume.id)
+    def test_delete_volume(self):
+        pool = cs.pools.list()[0]
+        volume = self.create_volume(pool=pool)
+        cs.volumes.delete(volume)
+        volume = cs.volumes.get(volume)
+        self.assertEqual(volume.actualSize, 0)

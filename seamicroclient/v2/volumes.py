@@ -23,9 +23,6 @@ from seamicroclient import base
 class Volume(base.Resource):
     HUMAN_ID = True
 
-    def __repr__(self):
-        return "<Volume: %s>" % self.id
-
     def delete(self):
         self.manager.delete(self)
 

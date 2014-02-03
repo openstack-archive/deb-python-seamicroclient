@@ -38,7 +38,7 @@ class ServersTest(utils.TestCase):
 
     def test_server_power_off(self):
         cs.servers.power_off(1)
-        cs.assert_called('PUT', '/servers/1')
+        cs.assert_called('GET', '/servers/1?action=power-off')
 
     def test_server_reset(self):
         cs.servers.reset(1)

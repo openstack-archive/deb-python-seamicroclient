@@ -16,6 +16,7 @@ Base utilities to build API operation managers and objects on top of.
 
 import abc
 import inspect
+import time
 
 import six
 
@@ -244,3 +245,8 @@ class Resource(object):
 
     def set_loaded(self, val):
         self._loaded = val
+
+    def refresh(self, sleep=None):
+        if sleep:
+            time.sleep(sleep)
+        return self.manager.get(self.id)

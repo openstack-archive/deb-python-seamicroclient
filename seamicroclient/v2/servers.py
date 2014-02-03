@@ -13,7 +13,6 @@
 """
 Server interface.
 """
-import time
 
 from seamicroclient import base
 
@@ -24,14 +23,6 @@ UNTAGGED_VLAN = "untaggedVlans"
 
 class Server(base.Resource):
     HUMAN_ID = True
-
-    def __repr__(self):
-        return "<Server: %s>" % self.id
-
-    def refresh(self, sleep=None):
-        if sleep:
-            time.sleep(sleep)
-        return self.manager.get(self.id)
 
     def power_on(self, using_pxe=False):
         self.manager.power_on(self, using_pxe)
@@ -129,10 +120,11 @@ class ServerManager(base.ManagerWithFind):
         :param server: The :class:`Server` (or its ID) to power off.
         :param force: force the server to power off.
         """
-        action_params = {}
+        action = 'power-off'
+        url = '/servers/%s?action=%s' % (base.getid(server), action)
         if force:
-            action_params = {"force": force}
-        self._action('power-off', server, action_params)
+            url = '%s&force=true' % url
+        return self.api.client.get(url)
 
     def reset(self, server, using_pxe=False, **kwargs):
         """
