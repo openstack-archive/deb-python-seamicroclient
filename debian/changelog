@@ -1,5 +1,5 @@
 python-seamicroclient (0.1.0-1) unstable; urgency=low
 
-  * Initial release. (Closes: #XXXXXX)
+  * Initial release. (Closes: #738328)
 
  -- Thomas Goirand <zigo@debian.org>  Sun, 09 Feb 2014 15:34:09 +0800
