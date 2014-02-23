@@ -58,7 +58,7 @@ class DiskManager(base.ManagerWithFind):
         """
         Power off the specified Disk
         """
-        url = "/storage/disks/%s/power" % base.getid(disk)
+        url = "/storage/disks/%s/" % base.getid(disk)
         body = {'action': 'power-off'}
         return self.api.client.put(url, body=body)
 
@@ -66,7 +66,7 @@ class DiskManager(base.ManagerWithFind):
         """
         Power on the specified Disk
         """
-        url = "/storage/disks/%s/power" % base.getid(disk)
+        url = "/storage/disks/%s/" % base.getid(disk)
         body = {'action': 'power-on'}
         return self.api.client.put(url, body=body)
 
@@ -74,14 +74,14 @@ class DiskManager(base.ManagerWithFind):
         """
         Activate LED of the specified Disk
         """
-        url = "/storage/disks/%s/led" % base.getid(disk)
-        body = {'action': 'power-on'}
+        url = "/storage/disks/%s/" % base.getid(disk)
+        body = {'action': 'activate-led'}
         return self.api.client.put(url, body=body)
 
     def deactivate_led(self, disk, **kwargs):
         """
         De-activate LED of the specified Disk
         """
-        url = "/storage/disks/%s/led" % base.getid(disk)
-        body = {'action': 'power-off'}
+        url = "/storage/disks/%s/" % base.getid(disk)
+        body = {'action': 'deactivate-led'}
         return self.api.client.put(url, body=body)
