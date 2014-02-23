@@ -20,11 +20,14 @@ from seamicroclient import base
 class Scard(base.Resource):
     HUMAN_ID = True
 
-    def set_disk_io_mode(self, io_mode, **kwargs):
-        return self.manager.set_disk_io_mode(self, io_mode, **kwargs)
-
     def set_management_mode(self, mode, force=False, **kwargs):
         return self.manager.set_management_mode(self, mode, force, **kwargs)
+
+    def volume_mode(self, value, **kwargs):
+        if value:
+            return self.manager.set_management_mode(self, 'volume', **kwargs)
+        else:
+            return self.manager.set_management_mode(self, 'disk', **kwargs)
 
 
 class ScardManager(base.ManagerWithFind):
@@ -37,14 +40,6 @@ class ScardManager(base.ManagerWithFind):
         :rtype: list of :class:`Scard`
         """
         return self._list("/chassis/scard", filters=filters)
-
-    def set_disk_io_mode(self, scard, io_mode, **kwargs):
-        """
-        Set disk I/O mode of the specified scard
-        """
-        url = "/chassis/scard/%s/ioMode" % base.getid(scard)
-        body = {'value': io_mode}
-        return self.api.client.put(url, body=body)
 
     def set_management_mode(self, scard, mode, force=False, **kwargs):
         """

@@ -23,14 +23,20 @@ class Interface(base.Resource):
     def shutdown(self, **kwargs):
         return self.manager.shutdown(self, **kwargs)
 
-    def start(self, **kwargs):
-        return self.manager.start(self, **kwargs)
+    def no_shutdown(self, **kwargs):
+        return self.manager.no_shutdown(self, **kwargs)
 
-    def create_tagged_vlan(self, vlan_id, **kwargs):
-        return self.manager.create_tagged_vlan(self, vlan_id, **kwargs)
+    def add_tagged_vlan(self, vlan_id, **kwargs):
+        return self.manager.add_tagged_vlan(self, vlan_id, **kwargs)
 
-    def delete_tagged_vlan(self, vlan_id, **kwargs):
-        return self.manager.delete_tagged_vlan(self, vlan_id, **kwargs)
+    def remove_tagged_vlan(self, vlan_id, **kwargs):
+        return self.manager.remove_tagged_vlan(self, vlan_id, **kwargs)
+
+    def add_untagged_vlan(self, vlan_id, **kwargs):
+        return self.manager.add_untagged_vlan(self, vlan_id, **kwargs)
+
+    def remove_untagged_vlan(self, vlan_id, **kwargs):
+        return self.manager.remove_untagged_vlan(self, vlan_id, **kwargs)
 
 
 class InterfaceManager(base.ManagerWithFind):
@@ -62,7 +68,7 @@ class InterfaceManager(base.ManagerWithFind):
         body = {'value': True}
         return self.api.client.put(url, body=body)
 
-    def start(self, interface, **kwargs):
+    def no_shutdown(self, interface, **kwargs):
         """
         Start the specified network Interface
         """
@@ -70,33 +76,36 @@ class InterfaceManager(base.ManagerWithFind):
         body = {'value': False}
         return self.api.client.put(url, body=body)
 
-    def create_tagged_vlan(self, interface, vlan_id, **kwargs):
+    def add_tagged_vlan(self, interface, vlan_id, **kwargs):
         """
-        Create tagged vlan for the given Interface
+        Add tagged vlan for the given Interface
         """
         url = '/interfaces/%s/vlans/taggedVlans' % base.getid(interface)
-        body = {'value': str(vlan_id)}
+        if isinstance(vlan_id, list):
+            body = {'add': ','.join(vlan_id)}
+        else:
+            body = {'add': str(vlan_id)}
         return self.api.client.put(url, body)
 
-    def delete_tagged_vlan(self, interface, vlan_id, **kwargs):
+    def remove_tagged_vlan(self, interface, vlan_id, **kwargs):
         """
-        Create tagged vlan for the given Interface
+        Remove tagged vlan for the given Interface
         """
         url = '/interfaces/%s/vlans/taggedVlans' % base.getid(interface)
         body = {'remove': str(vlan_id)}
         return self.api.client.put(url, body)
 
-    def create_untagged_vlan(self, interface, vlan_id, **kwargs):
+    def add_untagged_vlan(self, interface, vlan_id, **kwargs):
         """
-        Create untagged vlan for the given Interface
+        Add untagged vlan for the given Interface
         """
         url = '/interfaces/%s/vlans/untaggedVlans' % base.getid(interface)
-        body = {'value': str(vlan_id)}
+        body = {'add': str(vlan_id)}
         return self.api.client.put(url, body)
 
-    def delete_untagged_vlan(self, interface, vlan_id, **kwargs):
+    def remove_untagged_vlan(self, interface, vlan_id, **kwargs):
         """
-        Create untagged vlan for the given Interface
+        Remove untagged vlan for the given Interface
         """
         url = '/interfaces/%s/vlans/untaggedVlans' % base.getid(interface)
         body = {'remove': str(vlan_id)}
