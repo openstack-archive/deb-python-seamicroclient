@@ -151,12 +151,12 @@ class ManagerWithFind(Manager):
         To find volume with size less than equal to 500 GB and id contains
         'ironic'
 
-        kwargs = {'freeSize_le': 500, 'id_has': 'ironic'}
+        kwargs = {'freeSize_le': 500, 'id_has': 'ironic', "UsedSize": 300}
 
         Operator:
+        no operator required for "equal to" checks
         _le: less than equal to
         _ge: greater than equal to
-        _eq: equal to
         _has: contains string
 
         This isn't very efficient: it loads the entire list then filters on
@@ -182,6 +182,10 @@ class ManagerWithFind(Manager):
                     elif attr.endswith('_has'):
                         if value in getattr(obj, attr):
                             found.append(obj)
+                    else:
+                        if getattr(obj, attr) == value:
+                            found.append(obj)
+
             except AttributeError:
                 continue
 

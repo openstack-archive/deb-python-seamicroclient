@@ -55,6 +55,7 @@ class PoolManager(base.ManagerWithFind):
 
         :rtype: Instance of :class:`Pool`
         """
+        disks = map(lambda x: str(x), disks)
         body = {'disks': ','.join(disks), 'raidLevel': raid_level}
         url = '/storage/pools/%s/%s' % (base.getid(slot), pool_name)
         return self.api.client.put(url, body=body)
@@ -83,7 +84,6 @@ class PoolManager(base.ManagerWithFind):
         Perform a pool "action" -- .
         """
         body = {"action": action}
-        body.update(info)
         self.run_hooks('modify_body_for_action', body, **kwargs)
         url = '/storage/pools/%s' % base.getid(pool)
         return self.api.client.put(url, body=body)

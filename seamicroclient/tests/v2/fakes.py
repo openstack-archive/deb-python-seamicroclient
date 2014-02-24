@@ -111,3 +111,78 @@ class FakeHTTPClient(base_client.HTTPClient):
 
     def delete_servers_1_vdisk_0(self, **kwargs):
         return (200, {}, {})
+
+    def get_storage_disks(self, **kwargs):
+        return (200, {}, {})
+
+    def get_storage_disks_1(self, **kwargs):
+        return (200, {}, {'1': {}})
+
+    def put_storage_disks_1(self, **kwargs):
+        return (200, {}, {'1': {}})
+
+    def get_chassis(self, **kwargs):
+        return (200, {}, {})
+
+    def put_chassis_system_writeMem(self, **kwargs):
+        return (200, {}, {})
+
+    def get_chassis_fanTray(self, **kwargs):
+        return (200, {}, {})
+
+    def get_chassis_fanTray_1(self, **kwargs):
+        return (200, {}, {})
+
+    def get_interfaces(self, **kwargs):
+        return (200, {}, {})
+
+    def get_interfaces_1(self, **kwargs):
+        return (200, {}, {})
+
+    def put_interfaces_1_shutdown(self, **kwargs):
+        return (200, {}, {})
+
+    def put_interfaces_1_vlans_taggedVlans(self, **kwargs):
+        return (200, {}, {})
+
+    def put_interfaces_1_vlans_untaggedVlans(self, **kwargs):
+        return (200, {}, {})
+
+    def put_storage_pools_1_pool_name(self, **kwargs):
+        return (200, {}, {})
+
+    def delete_storage_pools_1_pool_name(self, **kwargs):
+        return (200, {}, {})
+
+    def put_storage_pools_1(self, **kwargs):
+        return (200, {}, {})
+
+    def get_chassis_powersupply(self, **kwargs):
+        return (200, {}, {})
+
+    def get_chassis_powersupply_1(self, **kwargs):
+        return (200, {}, {})
+
+    def get_chassis_scard(self, **kwargs):
+        return (200, {}, {})
+
+    def get_chassis_scard_1(self, **kwargs):
+        return (200, {}, {})
+
+    def put_chassis_scard_1_mgmtMode(self, **kwargs):
+        return (200, {}, {})
+
+    def get_chassis_smcard(self, **kwargs):
+        return (200, {}, {})
+
+    def get_chassis_smcard_1(self, **kwargs):
+        return (200, {}, {})
+
+    def get_chassis_systems(self, **kwargs):
+        return (200, {}, {})
+
+    def put_chassis_system_switchover(self, **kwargs):
+        return (200, {}, {})
+
+    def put_chassis_system_reload(self, **kwargs):
+        return (200, {}, {})
