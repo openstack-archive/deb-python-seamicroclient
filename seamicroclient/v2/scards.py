@@ -41,6 +41,15 @@ class ScardManager(base.ManagerWithFind):
         """
         return self._list("/chassis/scard", filters=filters)
 
+    def get(self, scard, **kwargs):
+        """
+        Get a specific scard.
+
+        :rtype: Instance of :class:`Scard`
+        """
+        return self._get(base.getid(scard),
+                         '/chassis/scard/%s' % base.getid(scard))
+
     def set_management_mode(self, scard, mode, force=False, **kwargs):
         """
         Set management mode of the specified scard

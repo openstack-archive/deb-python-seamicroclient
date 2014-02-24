@@ -82,10 +82,11 @@ class InterfaceManager(base.ManagerWithFind):
         """
         url = '/interfaces/%s/vlans/taggedVlans' % base.getid(interface)
         if isinstance(vlan_id, list):
+            vlan_id = map(lambda x: str(x), vlan_id)
             body = {'add': ','.join(vlan_id)}
         else:
             body = {'add': str(vlan_id)}
-        return self.api.client.put(url, body)
+        return self.api.client.put(url, body=body)
 
     def remove_tagged_vlan(self, interface, vlan_id, **kwargs):
         """
@@ -93,7 +94,7 @@ class InterfaceManager(base.ManagerWithFind):
         """
         url = '/interfaces/%s/vlans/taggedVlans' % base.getid(interface)
         body = {'remove': str(vlan_id)}
-        return self.api.client.put(url, body)
+        return self.api.client.put(url, body=body)
 
     def add_untagged_vlan(self, interface, vlan_id, **kwargs):
         """
@@ -101,7 +102,7 @@ class InterfaceManager(base.ManagerWithFind):
         """
         url = '/interfaces/%s/vlans/untaggedVlans' % base.getid(interface)
         body = {'add': str(vlan_id)}
-        return self.api.client.put(url, body)
+        return self.api.client.put(url, body=body)
 
     def remove_untagged_vlan(self, interface, vlan_id, **kwargs):
         """
@@ -109,4 +110,4 @@ class InterfaceManager(base.ManagerWithFind):
         """
         url = '/interfaces/%s/vlans/untaggedVlans' % base.getid(interface)
         body = {'remove': str(vlan_id)}
-        return self.api.client.put(url, body)
+        return self.api.client.put(url, body=body)

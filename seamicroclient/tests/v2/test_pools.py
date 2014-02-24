@@ -31,3 +31,19 @@ class PoolsTest(utils.TestCase):
         p = cs.pools.get(1)
         cs.assert_called('GET', '/storage/pools/1')
         self.assertTrue(isinstance(p, pools.Pool))
+
+    def test_create_pool(self):
+        cs.pools.create(1, "pool-name", [1, 5, 6])
+        cs.assert_called('PUT', '/storage/pools/1/pool-name')
+
+    def test_delete_pool(self):
+        cs.pools.delete('1/pool-name')
+        cs.assert_called('DELETE', '/storage/pools/1/pool-name')
+
+    def test_mount_pool(self):
+        cs.pools.mount(1)
+        cs.assert_called('PUT', '/storage/pools/1')
+
+    def test_unmount_pool(self):
+        cs.pools.unmount(1)
+        cs.assert_called('PUT', '/storage/pools/1')
