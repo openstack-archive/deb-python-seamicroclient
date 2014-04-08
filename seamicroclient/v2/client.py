@@ -12,17 +12,17 @@
 #    under the License.
 
 from seamicroclient import client
-from seamicroclient.v2 import servers
-from seamicroclient.v2 import pools
-from seamicroclient.v2 import volumes
-from seamicroclient.v2 import disks
 from seamicroclient.v2 import chassis
+from seamicroclient.v2 import disks
 from seamicroclient.v2 import fantrays
 from seamicroclient.v2 import interfaces
+from seamicroclient.v2 import pools
 from seamicroclient.v2 import powersupplies
 from seamicroclient.v2 import scards
+from seamicroclient.v2 import servers
 from seamicroclient.v2 import smcards
 from seamicroclient.v2 import system
+from seamicroclient.v2 import volumes
 
 
 class Client(object):
