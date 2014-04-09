@@ -124,7 +124,7 @@ class ServerManager(base.ManagerWithFind):
         url = '/servers/%s?action=%s' % (base.getid(server), action)
         if force:
             url = '%s&force=true' % url
-        return self.api.client.get(url)
+        return self.api.client.put(url, body={})
 
     def reset(self, server, using_pxe=False, **kwargs):
         """
