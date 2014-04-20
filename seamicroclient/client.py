@@ -35,7 +35,7 @@ class HTTPClient(object):
     USER_AGENT = 'python-seamicroclient'
 
     def __init__(self, user, password, auth_url=None,
-                 timeout=None, http_log_debug=False):
+                 timeout=None, http_log_debug=False, retries=3):
         self.user = user
         self.password = password
         self.api_endpoint = auth_url
@@ -46,6 +46,7 @@ class HTTPClient(object):
             self.timeout = float(timeout)
         else:
             self.timeout = None
+        self.retries = int(retries)
 
         self.times = []  # [("item", starttime, endtime), ...]
 
@@ -62,8 +63,6 @@ class HTTPClient(object):
                 # have to set it up here on WARNING (its original level)
                 # otherwise we will get all the requests logging messanges
                 rql.setLevel(logging.WARNING)
-        # requests within the same session can reuse TCP connections from pool
-        self.http = requests.Session()
 
     def get_timings(self):
         return self.times
@@ -109,7 +108,7 @@ class HTTPClient(object):
             kwargs.setdefault('timeout', self.timeout)
 
         self.http_log_req(method, url, kwargs)
-        resp = self.http.request(
+        resp = requests.request(
             method,
             url,
             **kwargs)
@@ -144,16 +143,31 @@ class HTTPClient(object):
         return resp, body
 
     def _cs_request(self, url, method, **kwargs):
-        if method in ['GET', 'DELETE']:
-            url = "%s?username=%s&password=%s" % (url, self.user,
-                                                  self.password)
-        else:
-            kwargs.setdefault('body', {}).update({'username': self.user,
-                                                'password': self.password})
-
-        resp, body = self._time_request(self.api_endpoint + url, method,
-                                        **kwargs)
-        return resp, body
+        attempts = 0
+        retry_delay = 5
+        while True:
+            attempts += 1
+            if method in ['GET', 'DELETE']:
+                url = "%s?username=%s&password=%s" % (url, self.user,
+                                                      self.password)
+            else:
+                kwargs.setdefault('body', {}).update({'username': self.user,
+                                                    'password': self.password})
+            try:
+                resp, body = self._time_request(self.api_endpoint + url,
+                                                method,**kwargs)
+                return resp, body
+            except requests.exceptions.ConnectionError as e:
+                if attempts > self.retries:
+                    raise
+                # Catch a connection refused from requests.request
+                # retry again with some time delay
+                self._logger.debug("Connection refused: %s" % e)
+                self._logger.debug("Failed attempt(%s of %s), "
+                                   "retrying in %s seconds" %
+                                   (attempts, self.retries,
+                                    retry_delay))
+                time.sleep(retry_delay)
 
     def get(self, url, **kwargs):
         return self._cs_request(url, 'GET', **kwargs)
