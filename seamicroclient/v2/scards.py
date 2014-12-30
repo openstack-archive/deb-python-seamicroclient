@@ -39,7 +39,7 @@ class ScardManager(base.ManagerWithFind):
 
         :rtype: list of :class:`Scard`
         """
-        return self._list("/chassis/scard", filters=filters)
+        return self._list("/chassis/scards", filters=filters)
 
     def get(self, scard, **kwargs):
         """
