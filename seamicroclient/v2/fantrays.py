@@ -40,4 +40,4 @@ class FanTrayManager(base.ManagerWithFind):
 
         :rtype: list of :class:`FanTray`
         """
-        return self._list("/chassis/fanTray", filters=filters)
+        return self._list("/chassis/fanTrays", filters=filters)
