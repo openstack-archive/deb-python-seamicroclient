@@ -55,10 +55,12 @@ class Manager(utils.HookableMixin):
         obj_class = self.resource_class
 
         data = body
-
         output = []
         for k, v in data.iteritems():
             if data[k]:
+                if type(v) != dict:
+                    output.append(obj_class(self, data, loaded=True))
+                    break
                 v.update({'id': k})
                 output.append(obj_class(self, v, loaded=True))
 

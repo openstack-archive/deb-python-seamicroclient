@@ -26,6 +26,11 @@ class System(base.Resource):
     def writemem(self, **kwargs):
         return self.manager.writemem(self, **kwargs)
 
+    def add_segment(self, vlan_id, **kwargs):
+        return self.manager.add_segment(self, vlan_id, **kwargs)
+
+    def remove_segment(self, vlan_id, **kwargs):
+        return self.manager.remove_segment(self, vlan_id, **kwargs)
 
 class SystemManager(base.ManagerWithFind):
     resource_class = System
@@ -36,7 +41,7 @@ class SystemManager(base.ManagerWithFind):
 
         :rtype: list of :class:`System`
         """
-        return self._list("/chassis/systems", filters=filters)
+        return self._list("/chassis/system", filters=filters)
 
     def switchover(self, system, mxcard=None, **kwargs):
         """
@@ -62,3 +67,25 @@ class SystemManager(base.ManagerWithFind):
         """
         url = "/chassis/system/reload"
         return self.api.client.put(url, body={})
+
+    def add_segment(self, system, vlan_id, **kwargs):
+        """
+        Create Global Network
+        """
+        url = "/chassis/system/vlans"
+        if vlan_id is not None:
+            action_params = {}
+            action_params.update({'add': vlan_id})
+            self.run_hooks('modify_body_for_action', action_params, **kwargs)
+            return self.api.client.put(url, body=action_params)
+
+    def remove_segment(self, system, vlan_id, **kwargs):
+        """
+        Remove Global Network
+        """
+        url = "/chassis/system/vlans"
+        if vlan_id is not None:
+            action_params = {}
+            action_params.update({'remove': vlan_id})
+            self.run_hooks('modify_body_for_action', action_params, **kwargs)
+            return self.api.client.put(url, body=action_params)
