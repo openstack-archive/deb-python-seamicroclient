@@ -54,6 +54,8 @@ class Server(base.Resource):
     def set_boot_order(self, boot_order="hd0", **kwargs):
         self.manager.set_boot_order(self, boot_order, **kwargs)
 
+    def get_boot_order(self, **kwargs):
+        return self.manager.get_boot_order(self, **kwargs)
 
 class ServerManager(base.ManagerWithFind):
     resource_class = Server
@@ -213,6 +215,11 @@ class ServerManager(base.ManagerWithFind):
             action_params.update({'boot-order': 'pxe,hd0'})
 
         return self._action('set-bios-boot-order', server, action_params)
+
+    def get_boot_order(self, server):
+        url = '/server/%s/bios/bootOrder' % base.getid(server)
+        ret,val = self.api.client.get(url)
+        return (ret , val.split(" ")[0])
 
     def _action(self, action, server, info=None, **kwargs):
         """
