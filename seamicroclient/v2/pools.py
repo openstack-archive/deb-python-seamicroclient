@@ -21,8 +21,11 @@ from seamicroclient import base
 class Pool(base.Resource):
     HUMAN_ID = True
 
-    def __repr__(self):
-        return "<Pool: %s>" % self.id
+    def delete(self, **kwargs):
+        return self.manager.delete(self, **kwargs)
+
+    def mount(self, **kwargs):
+        return self.manager.mount(self, **kwargs)
 
 
 class PoolManager(base.ManagerWithFind):
@@ -44,34 +47,43 @@ class PoolManager(base.ManagerWithFind):
 
         :rtype: list of :class:`Pool`
         """
-        pools = self._list("/storage/pools")
-        output = set()
-        if filters is not None:
-            for k, v in filters.iteritems():
-                for pool in pools:
-                    if isinstance(v, basestring):
-                        if v in getattr(pool, k):
-                            output.add(pool)
-                        else:
-                            if pool in output:
-                                output.remove(pool)
-                    elif isinstance(v, int):
-                        if v == getattr(pool, k):
-                            output.add(pool)
-                        else:
-                            if pool in output:
-                                output.remove(pool)
-                    else:
-                        continue
-            return output
-        return pools
+        return self._list("/storage/pools", filters=filters)
+
+    def create(self, slot, pool_name, disks, raid_level=0, **kwargs):
+        """
+        Create a pool on the given scard slot using disks of that slot.
+
+        :rtype: Instance of :class:`Pool`
+        """
+        disks = map(lambda x: str(x), disks)
+        body = {'disks': ','.join(disks), 'raidLevel': raid_level}
+        url = '/storage/pools/%s/%s' % (base.getid(slot), pool_name)
+        return self.api.client.put(url, body=body)
+
+    def delete(self, pool, **kwargs):
+        """
+        Delete the specified pool.
+        """
+        url = '/storage/pools/%s' % base.getid(pool)
+        return self.api.client.delete(url)
+
+    def mount(self, pool, **kwargs):
+        """
+        Mount the specified Pool
+        """
+        return self._action("mount", pool, **kwargs)
+
+    def unmount(self, pool, **kwargs):
+        """
+        UnMount the specified Pool
+        """
+        return self._action("unmount", pool, **kwargs)
 
     def _action(self, action, pool, info=None, **kwargs):
         """
         Perform a pool "action" -- .
         """
         body = {"action": action}
-        body.update(info)
         self.run_hooks('modify_body_for_action', body, **kwargs)
         url = '/storage/pools/%s' % base.getid(pool)
         return self.api.client.put(url, body=body)

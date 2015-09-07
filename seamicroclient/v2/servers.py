@@ -18,7 +18,7 @@ from seamicroclient import base
 
 
 TAGGED_VLAN = "taggedVlans"
-UNTAGGED_VLAN = "untaggedVlans"
+UNTAGGED_VLAN = "untaggedVlan"
 
 
 class Server(base.Resource):
@@ -33,17 +33,17 @@ class Server(base.Resource):
     def reset(self, using_pxe=False):
         self.manager.reset(self, using_pxe)
 
-    def set_tagged_vlan(self, vlan_id, **kwargs):
-        self.manager.set_tagged_vlan(self, vlan_id, **kwargs)
+    def set_tagged_vlan(self, vlan_id, nics=[], **kwargs):
+        self.manager.set_tagged_vlan(self, vlan_id, nics, **kwargs)
 
-    def unset_tagged_vlan(self, vlan_id, **kwargs):
-        self.manager.unset_tagged_vlan(self, vlan_id, **kwargs)
+    def unset_tagged_vlan(self, vlan_id, nics=[], **kwargs):
+        self.manager.unset_tagged_vlan(self, vlan_id, nics, **kwargs)
 
-    def set_untagged_vlan(self, vlan_id, **kwargs):
-        self.manager.set_untagged_vlan(self, vlan_id, **kwargs)
+    def set_untagged_vlan(self, vlan_id, nics=[], **kwargs):
+        self.manager.set_untagged_vlan(self, vlan_id, nics, **kwargs)
 
-    def unset_untagged_vlan(self, vlan_id, **kwargs):
-        self.manager.unset_untagged_vlan(self, vlan_id, **kwargs)
+    def unset_untagged_vlan(self, vlan_id, nics=[], **kwargs):
+        self.manager.unset_untagged_vlan(self, vlan_id, nics, **kwargs)
 
     def attach_volume(self, volume, vdisk=0, **kwargs):
         self.manager.attach_volume(self, volume, vdisk, **kwargs)
@@ -54,6 +54,8 @@ class Server(base.Resource):
     def set_boot_order(self, boot_order="hd0", **kwargs):
         self.manager.set_boot_order(self, boot_order, **kwargs)
 
+    def get_boot_order(self, **kwargs):
+        return self.manager.get_boot_order(self, **kwargs)
 
 class ServerManager(base.ManagerWithFind):
     resource_class = Server
@@ -124,7 +126,7 @@ class ServerManager(base.ManagerWithFind):
         url = '/servers/%s?action=%s' % (base.getid(server), action)
         if force:
             url = '%s&force=true' % url
-        return self.api.client.get(url)
+        return self.api.client.put(url, body={})
 
     def reset(self, server, using_pxe=False, **kwargs):
         """
@@ -138,44 +140,44 @@ class ServerManager(base.ManagerWithFind):
             action_params = {"using-pxe": using_pxe}
         self._action('reset', server, action_params)
 
-    def set_tagged_vlan(self, server, vlan_id, **kwargs):
+    def set_tagged_vlan(self, server, vlan_id, nics=[], **kwargs):
         """
         Set the tagged vlan id for the server.
 
         :param server: The :class:`Server` (or its ID) to power on.
         :param vlan_id: The tagged vlan id for the server.
         """
-        self._handle_vlan(server, vlan_id, TAGGED_VLAN, **kwargs)
+        self._handle_vlan(server, vlan_id, TAGGED_VLAN, nics, **kwargs)
 
-    def unset_tagged_vlan(self, server, vlan_id, **kwargs):
+    def unset_tagged_vlan(self, server, vlan_id, nics=[], **kwargs):
         """
         Unset the tagged vlan id for the server.
 
         :param server: The :class:`Server` (or its ID) to power on.
         :param vlan_id: The tagged vlan id for the server.
         """
-        self._handle_vlan(server, vlan_id, TAGGED_VLAN, unset=True, **kwargs)
+        self._handle_vlan(server, vlan_id, TAGGED_VLAN, nics, unset=True, **kwargs)
 
-    def set_untagged_vlan(self, server, vlan_id, **kwargs):
+    def set_untagged_vlan(self, server, vlan_id, nics=[], **kwargs):
         """
         Set the untagged vlan id for the server.
 
         :param server: The :class:`Server` (or its ID) to power on.
         :param vlan_id: The untagged vlan id for the server.
         """
-        self._handle_vlan(server, vlan_id, UNTAGGED_VLAN, **kwargs)
+        self._handle_vlan(server, vlan_id, UNTAGGED_VLAN, nics, **kwargs)
 
-    def unset_untagged_vlan(self, server, vlan_id, **kwargs):
+    def unset_untagged_vlan(self, server, vlan_id, nics=[], **kwargs):
         """
         Unset the untagged vlan id for the server.
 
         :param server: The :class:`Server` (or its ID) to power on.
         :param vlan_id: The untagged vlan id for the server.
         """
-        self._handle_vlan(server, vlan_id, UNTAGGED_VLAN,
+        self._handle_vlan(server, vlan_id, UNTAGGED_VLAN, nics,
                           unset=True, **kwargs)
 
-    def _handle_vlan(self, server, vlan_id, vlan_type, unset=False, **kwargs):
+    def _handle_vlan(self, server, vlan_id, vlan_type, nics=[], unset=False, **kwargs):
         """
         Set/Unset tagged/untagged vlan id for the server.
 
@@ -192,8 +194,19 @@ class ServerManager(base.ManagerWithFind):
             else:
                 action_params.update({'add': vlan_id})
             self.run_hooks('modify_body_for_action', action_params, **kwargs)
-            url = '/servers/%s/nic/0/%s' % (base.getid(server), vlan_type)
-            return self.api.client.put(url, body=action_params)
+
+            if nics:
+                for nic in nics:
+                    url = '/servers/%s/nic/%s/%s' % (base.getid(server), nic[3:], vlan_type)
+                    self.api.client.put(url, body=action_params)
+                return
+            else:
+                u = '/servers/%s/nic' % (base.getid(server))
+                nics = self._list(u)
+                for nic in nics:
+                    url = '/servers/%s/nic/%s/%s' % (base.getid(server), nic.id, vlan_type)
+                    self.api.client.put(url, body=action_params)
+                return
 
     def set_boot_order(self, server, boot_order="hd0", **kwargs):
         """
@@ -207,6 +220,11 @@ class ServerManager(base.ManagerWithFind):
             action_params.update({'boot-order': 'pxe,hd0'})
 
         return self._action('set-bios-boot-order', server, action_params)
+
+    def get_boot_order(self, server):
+        url = '/server/%s/bios/bootOrder' % base.getid(server)
+        ret,val = self.api.client.get(url)
+        return (ret , val.split(" ")[0])
 
     def _action(self, action, server, info=None, **kwargs):
         """

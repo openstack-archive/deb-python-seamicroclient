@@ -35,7 +35,7 @@ class HTTPClient(object):
     USER_AGENT = 'python-seamicroclient'
 
     def __init__(self, user, password, auth_url=None,
-                 timeout=None, http_log_debug=False):
+                 timeout=None, http_log_debug=False, retries=3):
         self.user = user
         self.password = password
         self.api_endpoint = auth_url
@@ -46,10 +46,9 @@ class HTTPClient(object):
             self.timeout = float(timeout)
         else:
             self.timeout = None
+        self.retries = int(retries)
 
         self.times = []  # [("item", starttime, endtime), ...]
-
-        self.auth_token = None
 
         self._logger = logging.getLogger(__name__)
         if self.http_log_debug and not self._logger.handlers:
@@ -64,12 +63,6 @@ class HTTPClient(object):
                 # have to set it up here on WARNING (its original level)
                 # otherwise we will get all the requests logging messanges
                 rql.setLevel(logging.WARNING)
-        # requests within the same session can reuse TCP connections from pool
-        self.http = requests.Session()
-
-    def unauthenticate(self):
-        """Forget all of our authentication information."""
-        self.auth_token = None
 
     def get_timings(self):
         return self.times
@@ -115,7 +108,7 @@ class HTTPClient(object):
             kwargs.setdefault('timeout', self.timeout)
 
         self.http_log_req(method, url, kwargs)
-        resp = self.http.request(
+        resp = requests.request(
             method,
             url,
             **kwargs)
@@ -150,39 +143,31 @@ class HTTPClient(object):
         return resp, body
 
     def _cs_request(self, url, method, **kwargs):
-        if self.auth_token:
+        attempts = 0
+        retry_delay = 5
+        while True:
+            attempts += 1
             if method in ['GET', 'DELETE']:
                 url = "%s?username=%s&password=%s" % (url, self.user,
                                                       self.password)
             else:
-                kwargs.setdefault('body', {})['authtoken'] = self.auth_token
-
-        # Perform the request once. If we get a 401 back then it
-        # might be because the auth token expired, so try to
-        # re-authenticate and try again. If it still fails, bail.
-        try:
-
-            resp, body = self._time_request(self.api_endpoint + url, method,
-                                            **kwargs)
-            return resp, body
-        except (exceptions.Unauthorized, exceptions.BadRequest) as e:
+                kwargs.setdefault('body', {}).update({'username': self.user,
+                                                    'password': self.password})
             try:
-                # first discard auth token, to avoid the possibly expired
-                # token being re-used in the re-authentication attempt
-                self.unauthenticate()
-                self.authenticate()
-                if method in ['GET', 'DELETE']:
-                    url = "%s?username=%s&password=%s" % (url, self.user,
-                                                          self.password)
-                else:
-                    kwargs.setdefault(
-                        'body', {})['authtoken'] = self.auth_token
-
                 resp, body = self._time_request(self.api_endpoint + url,
-                                                method, **kwargs)
+                                                method,**kwargs)
                 return resp, body
-            except exceptions.Unauthorized:
-                raise e
+            except requests.exceptions.ConnectionError as e:
+                if attempts > self.retries:
+                    raise
+                # Catch a connection refused from requests.request
+                # retry again with some time delay
+                self._logger.debug("Connection refused: %s" % e)
+                self._logger.debug("Failed attempt(%s of %s), "
+                                   "retrying in %s seconds" %
+                                   (attempts, self.retries,
+                                    retry_delay))
+                time.sleep(retry_delay)
 
     def get(self, url, **kwargs):
         return self._cs_request(url, 'GET', **kwargs)
@@ -195,41 +180,6 @@ class HTTPClient(object):
 
     def delete(self, url, **kwargs):
         return self._cs_request(url, 'DELETE', **kwargs)
-
-    def authenticate(self):
-        auth_url = self.auth_url
-        if self.version == "v2.0":  # FIXME(rk): This should be better.
-            self._v2_auth(auth_url)
-
-    def _v2_auth(self, url):
-        """Authenticate against a v2.0 auth service."""
-        if self.auth_token:
-            return
-        else:
-            body = {"username": self.user, "password": self.password}
-
-        return self._authenticate(url, body)
-
-    def _authenticate(self, url, body, **kwargs):
-        """Authenticate and extract the service catalog."""
-        method = "POST"
-        token_url = url + "/login"
-
-        # Make sure we follow redirects when trying to reach Keystone
-        resp, respbody = self._time_request(
-            token_url,
-            method,
-            body=body,
-            allow_redirects=True,
-            **kwargs)
-
-        return self._extract_auth_token(url, resp, respbody)
-
-    def _extract_auth_token(self, url, resp, body):
-        if resp.status_code == 200 or resp.status_code == 201:
-            if 'OpaqueRef' not in body:
-                raise exceptions.AuthorizationFailure()
-            self.auth_token = body
 
 
 def get_client_class(version):

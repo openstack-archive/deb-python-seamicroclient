@@ -68,7 +68,8 @@ class ClientTest(utils.TestCase):
                        'User-Agent': 'python-seamicroclient'}
             mock_request.assert_called_with(
                 "GET",
-                "http://example.com/hi?username=%s&password=%s" % (cl.user, cl.password),
+                "http://example.com/hi?username=%s&password=%s" % (cl.user,
+                                                                cl.password),
                 headers=headers)
             # Automatic JSON parsing
             self.assertEqual(body, {"hi": "there"})
@@ -92,16 +93,6 @@ class ClientTest(utils.TestCase):
                 data=json.dumps(body))
 
         test_post_call()
-
-    def test_auth_failure(self):
-        cl = get_client()
-
-        # response must not have x-server-management-url header
-        @mock.patch.object(requests.Session, "request", mock_request)
-        def test_auth_call():
-            self.assertRaises(exceptions.AuthorizationFailure, cl.authenticate)
-
-        test_auth_call()
 
     def test_connection_refused(self):
         cl = get_client()

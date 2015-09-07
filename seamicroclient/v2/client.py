@@ -12,8 +12,16 @@
 #    under the License.
 
 from seamicroclient import client
-from seamicroclient.v2 import servers
+from seamicroclient.v2 import chassis
+from seamicroclient.v2 import disks
+from seamicroclient.v2 import fantrays
+from seamicroclient.v2 import interfaces
 from seamicroclient.v2 import pools
+from seamicroclient.v2 import powersupplies
+from seamicroclient.v2 import scards
+from seamicroclient.v2 import servers
+from seamicroclient.v2 import smcards
+from seamicroclient.v2 import system
 from seamicroclient.v2 import volumes
 
 
@@ -40,6 +48,14 @@ class Client(object):
         self.servers = servers.ServerManager(self)
         self.pools = pools.PoolManager(self)
         self.volumes = volumes.VolumeManager(self)
+        self.disks = disks.DiskManager(self)
+        self.chassis = chassis.ChassisManager(self)
+        self.fantrays = fantrays.FanTrayManager(self)
+        self.interfaces = interfaces.InterfaceManager(self)
+        self.powersupplies = powersupplies.PowerSupplyManager(self)
+        self.scards = scards.ScardManager(self)
+        self.smcards = smcards.SMCardManager(self)
+        self.system = system.SystemManager(self)
 
         self.client = client.HTTPClient(username,
                                         password,

@@ -15,7 +15,6 @@ Base utilities to build API operation managers and objects on top of.
 """
 
 import abc
-import inspect
 import time
 
 import six
@@ -47,7 +46,7 @@ class Manager(utils.HookableMixin):
     def __init__(self, api):
         self.api = api
 
-    def _list(self, url, body=None):
+    def _list(self, url, body=None, filters=None):
         if body:
             _resp, body = self.api.client.post(url, body=body)
         else:
@@ -56,12 +55,34 @@ class Manager(utils.HookableMixin):
         obj_class = self.resource_class
 
         data = body
-
         output = []
         for k, v in data.iteritems():
             if data[k]:
+                if type(v) != dict:
+                    output.append(obj_class(self, data, loaded=True))
+                    break
                 v.update({'id': k})
                 output.append(obj_class(self, v, loaded=True))
+
+        filtered_output = set()
+        if filters is not None:
+            for k, v in filters.iteritems():
+                for item in output:
+                    if isinstance(v, basestring):
+                        if v in getattr(item, k):
+                            output.add(item)
+                        else:
+                            if item in output:
+                                output.remove(item)
+                    elif isinstance(v, int):
+                        if v == getattr(item, k):
+                            output.add(item)
+                        else:
+                            if item in output:
+                                output.remove(item)
+                    else:
+                        continue
+            return filtered_output
         return output
 
     def _get(self, id, url):
@@ -129,40 +150,44 @@ class ManagerWithFind(Manager):
         """
         Find all items with attributes matching ``**kwargs``.
 
+        To find volume with size less than equal to 500 GB and id contains
+        'ironic'
+
+        kwargs = {'freeSize_le': 500, 'id_has': 'ironic', "UsedSize": 300}
+
+        Operator:
+        no operator required for "equal to" checks
+        _le: less than equal to
+        _ge: greater than equal to
+        _has: contains string
+
         This isn't very efficient: it loads the entire list then filters on
         the Python side.
         """
         found = []
         searches = kwargs.items()
 
-        detailed = True
-        list_kwargs = {}
-
-        list_argspec = inspect.getargspec(self.list)
-        if 'detailed' in list_argspec.args:
-            detailed = ("human_id" not in kwargs and
-                        "name" not in kwargs and
-                        "display_name" not in kwargs)
-            list_kwargs['detailed'] = detailed
-
-        if 'is_public' in list_argspec.args and 'is_public' in kwargs:
-            is_public = kwargs['is_public']
-            list_kwargs['is_public'] = is_public
-            if is_public is None:
-                tmp_kwargs = kwargs.copy()
-                del tmp_kwargs['is_public']
-                searches = tmp_kwargs.items()
-
-        listing = self.list(**list_kwargs)
+        listing = self.list()
 
         for obj in listing:
             try:
-                if all(getattr(obj, attr) == value
-                        for (attr, value) in searches):
-                    if detailed:
-                        found.append(obj)
+                for attr, value in searches:
+                    if attr.endswith('_eq'):
+                        if getattr(obj, attr) == value:
+                            found.append(obj)
+                    elif attr.endswith('_le'):
+                        if getattr(obj, attr) <= value:
+                            found.append(obj)
+                    elif attr.endswith('_ge'):
+                        if getattr(obj, attr) >= value:
+                            found.append(obj)
+                    elif attr.endswith('_has'):
+                        if value in getattr(obj, attr):
+                            found.append(obj)
                     else:
-                        found.append(self.get(obj.id))
+                        if getattr(obj, attr) == value:
+                            found.append(obj)
+
             except AttributeError:
                 continue
 
