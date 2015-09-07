@@ -1,3 +1,9 @@
+python-seamicroclient (0.4.0-1) experimental; urgency=medium
+
+  * New upstream release.
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 08 Sep 2015 00:08:05 +0200
+
 python-seamicroclient (0.1.0-2) unstable; urgency=medium
 
   * Added missing build-depends: openstack-pkg-tools (Closes: #741539).
