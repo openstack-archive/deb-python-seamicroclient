@@ -38,17 +38,17 @@ Text encoding
 
     WRONG:
 
-    mystring = infile.readline()
-    myreturnstring = do_some_magic_with(mystring)
-    outfile.write(myreturnstring)
+    >>> mystring = infile.readline()
+    >>> myreturnstring = do_some_magic_with(mystring)
+    >>> outfile.write(myreturnstring)
 
     RIGHT:
 
-    mystring = infile.readline()
-    mytext = s.decode('utf-8')
-    returntext = do_some_magic_with(mytext)
-    returnstring = returntext.encode('utf-8')
-    outfile.write(returnstring)
+    >>> mystring = infile.readline()
+    >>> mytext = s.decode('utf-8')
+    >>> returntext = do_some_magic_with(mytext)
+    >>> returnstring = returntext.encode('utf-8')
+    >>> outfile.write(returnstring)
 
 Running Tests
 -------------
