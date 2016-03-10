@@ -1,8 +1,12 @@
-python-seamicroclient (0.4.0-2) UNRELEASED; urgency=medium
+python-seamicroclient (0.4.0-3) UNRELEASED; urgency=medium
 
+  [ Ondřej Nový ]
   * Fixed VCS URLs (https).
 
- -- Ondřej Nový <novy@ondrej.org>  Sun, 28 Feb 2016 15:50:04 +0100
+  [ Thomas Goirand ]
+  * Added missing build-depends-indep: subunit.
+
+ -- Thomas Goirand <zigo@debian.org>  Thu, 10 Mar 2016 10:31:04 +0100
 
 python-seamicroclient (0.4.0-1) experimental; urgency=medium
 
