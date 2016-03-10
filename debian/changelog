@@ -6,6 +6,7 @@ python-seamicroclient (0.4.0-3) UNRELEASED; urgency=medium
   [ Thomas Goirand ]
   * Added missing build-depends-indep: subunit.
   * Removed argparse from requirements.txt and lift pbr upper bound.
+  * Added missing python-requests build-dep.
 
  -- Thomas Goirand <zigo@debian.org>  Thu, 10 Mar 2016 10:31:04 +0100
 
