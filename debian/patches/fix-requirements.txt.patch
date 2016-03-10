@@ -1,0 +1,27 @@
+Description: Fix requirements.txt and test-requirements.txt
+Author: Thomas Goirand <zigo@debian.org>
+Forwarded: no
+Last-Update: 2016-03-10
+
+--- python-seamicroclient-0.4.0.orig/requirements.txt
++++ python-seamicroclient-0.4.0/requirements.txt
+@@ -1,5 +1,4 @@
+-pbr>=0.5.21,<1.0
+-argparse
++pbr>=0.5.21
+ iso8601>=0.1.8
+ PrettyTable>=0.7,<0.8
+ requests>=1.1
+--- python-seamicroclient-0.4.0.orig/test-requirements.txt
++++ python-seamicroclient-0.4.0/test-requirements.txt
+@@ -3,8 +3,8 @@ hacking>=0.8.0,<0.9
+ coverage>=3.6
+ discover
+ fixtures>=0.3.14
+-keyring>=1.6.1,<2.0
++keyring>=1.6.1
+ mock>=1.0
+-sphinx>=1.1.2,<1.2
++sphinx>=1.1.2
+ testrepository>=0.0.17
+ testtools>=0.9.32
