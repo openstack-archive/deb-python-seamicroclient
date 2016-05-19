@@ -8,6 +8,9 @@ python-seamicroclient (0.4.0-3) UNRELEASED; urgency=medium
   * Removed argparse from requirements.txt and lift pbr upper bound.
   * Added missing python-requests build-dep.
 
+  [ Ondřej Nový ]
+  * d/rules: Changed UPSTREAM_GIT protocol to https
+
  -- Thomas Goirand <zigo@debian.org>  Thu, 10 Mar 2016 10:31:04 +0100
 
 python-seamicroclient (0.4.0-1) experimental; urgency=medium
