@@ -155,7 +155,7 @@ class HTTPClient(object):
                                                     'password': self.password})
             try:
                 resp, body = self._time_request(self.api_endpoint + url,
-                                                method,**kwargs)
+                                                method, **kwargs)
                 return resp, body
             except requests.exceptions.ConnectionError as e:
                 if attempts > self.retries:
