@@ -36,8 +36,8 @@ Build-Depends-Indep: python-babel,
 #               python3-simplejson,
 #               python3-six (>= 1.4.1),
 Standards-Version: 3.9.6
-Vcs-Browser: https://anonscm.debian.org/cgit/openstack/python-seamicroclient.git/
-Vcs-Git: https://anonscm.debian.org/git/openstack/python-seamicroclient.git
+Vcs-Browser: https://git.openstack.org/cgit/openstack/deb-python-seamicroclient
+Vcs-Git: https://git.openstack.org/openstack/deb-python-seamicroclient
 Homepage: https://github.com/seamicro/python-seamicroclient
 
 Package: python-seamicroclient

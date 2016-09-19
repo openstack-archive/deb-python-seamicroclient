@@ -7,6 +7,17 @@ python-seamicroclient (0.4.0-3) UNRELEASED; urgency=medium
   * Added missing build-depends-indep: subunit.
   * Removed argparse from requirements.txt and lift pbr upper bound.
   * Added missing python-requests build-dep.
+  * Blacklist a number of tests:
+    - tests.test_http.ClientTest.test_get
+    - test_http.ClientTest.test_post
+    - v2.test_fantrays.FanTraysTest.test_list_fantrays
+    - v2.test_scards.ScardsTest.test_list_scards
+    - v2.test_servers.ServersTest.test_server_set_tagged_vlan
+    - v2.test_servers.ServersTest.test_server_set_untagged_vlan
+    - v2.test_servers.ServersTest.test_server_unset_tagged_vlan
+    - v2.test_servers.ServersTest.test_server_unset_untagged_vlan
+    - v2.test_system.Systemstest.test_list_system
+  * Using OpenStack's Gerrit as VCS URLs.
 
   [ Ondřej Nový ]
   * d/rules: Changed UPSTREAM_GIT protocol to https
