@@ -1,4 +1,5 @@
 [gerrit]
-host=amd_dmz_gerrit_ip
+host=review.openstack.org
 port=29418
-project=openstack/python-seamicroclient.git
+project=openstack/deb-python-seamicroclient.git
+defaultbranch=debian/newton
