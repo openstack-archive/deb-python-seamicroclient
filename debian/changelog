@@ -21,6 +21,8 @@ python-seamicroclient (0.4.0-3) UNRELEASED; urgency=medium
 
   [ Ondřej Nový ]
   * d/rules: Changed UPSTREAM_GIT protocol to https
+  * d/s/options: extend-diff-ignore of .gitreview
+  * d/control: Use correct branch in Vcs-* fields
 
  -- Thomas Goirand <zigo@debian.org>  Thu, 10 Mar 2016 10:31:04 +0100
 
