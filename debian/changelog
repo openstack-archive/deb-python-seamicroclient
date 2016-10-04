@@ -1,9 +1,7 @@
-python-seamicroclient (0.4.0-3) UNRELEASED; urgency=medium
-
-  [ Ondřej Nový ]
-  * Fixed VCS URLs (https).
+python-seamicroclient (0.4.0-3) unstable; urgency=medium
 
   [ Thomas Goirand ]
+  * Uploading to unstable.
   * Added missing build-depends-indep: subunit.
   * Removed argparse from requirements.txt and lift pbr upper bound.
   * Added missing python-requests build-dep.
@@ -20,6 +18,7 @@ python-seamicroclient (0.4.0-3) UNRELEASED; urgency=medium
   * Using OpenStack's Gerrit as VCS URLs.
 
   [ Ondřej Nový ]
+  * Fixed VCS URLs (https).
   * d/rules: Changed UPSTREAM_GIT protocol to https
   * d/s/options: extend-diff-ignore of .gitreview
   * d/control: Use correct branch in Vcs-* fields
