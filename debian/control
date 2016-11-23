@@ -6,7 +6,7 @@ Uploaders: Julien Danjou <acid@debian.org>,
            Thomas Goirand <zigo@debian.org>,
            Mehdi Abaakouk <sileht@sileht.net>
 Build-Depends: openstack-pkg-tools,
-               debhelper (>= 9),
+               debhelper (>= 10),
                dh-python,
                python-all,
                python-pbr,
